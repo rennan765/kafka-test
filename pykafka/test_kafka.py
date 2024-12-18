@@ -9,11 +9,11 @@ import json
 load_dotenv()
 
 # Configurações Kafka
-BOOTSTRAP_SERVERS = os.getenv("BOOTSTRAP_SERVERS")
-TOPIC_NAME = os.getenv("TOPIC_NAME")
-CLIENT_ID = os.getenv("CLIENT_ID")
-GROUP_ID = os.getenv("GROUP_ID")
-AUTO_OFFSET_RESET = os.getenv("AUTO_OFFSET_RESET")
+BOOTSTRAP_SERVERS = os.getenv('BOOTSTRAP_SERVERS')
+TOPIC_NAME = os.getenv('TOPIC_NAME')
+CLIENT_ID = os.getenv('CLIENT_ID')
+GROUP_ID = os.getenv('GROUP_ID')
+AUTO_OFFSET_RESET = os.getenv('AUTO_OFFSET_RESET')
 
 
 class KafkaTests(unittest.TestCase):
@@ -22,16 +22,18 @@ class KafkaTests(unittest.TestCase):
     def __generate_mock_message(self):
         """Gera uma mensagem mock de acordo com o schema"""
         return {
-            "documento": self.fake.ssn(),  # Documento único
-            "nome": self.fake.name(),
-            "dataNascimento": self.fake.date_of_birth().isoformat(),
-            "email": self.fake.email(),
-            "telefone": self.fake.phone_number(),
-            "endereco": {
-                "logradouro": self.fake.street_address(),
-                "cidade": self.fake.city(),
-                "estado": self.fake.state_abbr(),
-                "cep": self.fake.postcode()
+            'data': {
+                'documento': self.fake.ssn(),  # Documento único
+                'nome': self.fake.name(),
+                'dataNascimento': self.fake.date_of_birth().isoformat(),
+                'email': self.fake.email(),
+                'telefone': self.fake.phone_number(),
+                'endereco': {
+                    'logradouro': self.fake.street_address(),
+                    'cidade': self.fake.city(),
+                    'estado': self.fake.state_abbr(),
+                    'cep': self.fake.postcode()
+                }
             }
         }
 
@@ -49,22 +51,22 @@ class KafkaTests(unittest.TestCase):
 
     @staticmethod
     def _delivery_report(err, msg):
-        """Callback chamado após o envio da mensagem"""
+        '''Callback chamado após o envio da mensagem'''
         if err is not None:
-            print(f"Erro ao produzir mensagem: {err}")
+            print(f'Erro ao produzir mensagem: {err}')
         else:
-            print(f"Mensagem enviada para {msg.topic()} [{msg.partition()}] @offset {msg.offset()}")
+            print(f'Mensagem enviada para {msg.topic()} [{msg.partition()}] @offset {msg.offset()}')
             return msg
 
     __status = None
 
     def test_produce_message(self):
-        """Teste de produção de mensagens"""
+        '''Teste de produção de mensagens'''
         producer = Producer(self.producer_config)
 
         # Gerar mensagem mock
         mock_message = self.__generate_mock_message()
-        message_key = mock_message["documento"]
+        message_key = mock_message['data']['documento']
 
         # Produzir mensagem
         def delivery_report(err, msg):
@@ -83,7 +85,7 @@ class KafkaTests(unittest.TestCase):
         self.assertIsNotNone(self.__status)
 
     def test_consume_messages(self):
-        """Teste de consumo de mensagens"""
+        '''Teste de consumo de mensagens'''
         producer = Producer(self.producer_config)
         consumer = Consumer(self.consumer_config)
 
@@ -94,7 +96,7 @@ class KafkaTests(unittest.TestCase):
         for message in mock_messages:
             producer.produce(
                 TOPIC_NAME,
-                key=message["documento"],
+                key=message['data']['documento'],
                 value=json.dumps(message)
             )
         producer.flush()
@@ -108,7 +110,7 @@ class KafkaTests(unittest.TestCase):
                 continue
             if msg.error():
                 if msg.error().code() != KafkaError._PARTITION_EOF:
-                    self.fail(f"Erro no consumidor: {msg.error()}")
+                    self.fail(f'Erro no consumidor: {msg.error()}')
                 continue
             # Verifica se a mensagem não está vazia antes de processar
             if msg.value() is not None:
@@ -122,5 +124,5 @@ class KafkaTests(unittest.TestCase):
         consumer.close()
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()
