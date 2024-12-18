@@ -31,6 +31,7 @@ jobs:
         time: '2s'
   dotnet-test:
     runs-on: ubuntu-latest
+    needs: checkout
 
     steps:
     - name: Setup .NET
@@ -46,6 +47,7 @@ jobs:
         dotnet test --configuration Release --no-build
   python-test:
     runs-on: ubuntu-latest
+    needs: checkout
 
     steps:
     - name: Set up Python
