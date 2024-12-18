@@ -1,0 +1,55 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: KafkaTest
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore dependencies
+      run: |
+         cd 4oito6
+         dotnet restore
+    
+    - name: Build
+      run: |
+         cd 4oito6
+         dotnet build --no-restore
+
+    - name: Start dependencies (docker-compose)
+      run: docker-compose up -d
+
+    - name: Wait containers to start
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '10s'
+
+    - name: Init Kafka Topic Configuration
+      run: |
+         chmod +x ./init.sh
+         ./init.sh
+      shell: bash
+
+    - name: Wait to run tests
+      uses: jakejarvis/wait-action@master
+      with:
+        time: '2s'
+    
+    - name: Run Tests
+      run: |
+           cd 4oito6/4oito6.Kafka/
+           dotnet test 4oito6.Kafka.csproj --no-build --verbosity normal
