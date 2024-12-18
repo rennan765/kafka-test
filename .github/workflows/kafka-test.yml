@@ -34,6 +34,9 @@ jobs:
     needs: checkout
 
     steps:
+    - name: Checkout do código
+      uses: actions/checkout@v3
+      
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
@@ -50,6 +53,9 @@ jobs:
     needs: checkout
 
     steps:
+    - name: Checkout do código
+      uses: actions/checkout@v3
+
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
