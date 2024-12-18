@@ -1,5 +1,11 @@
 #!/bin/bash
 
+echo -e 'Inicializando containers'
+docker-compose up -d
+
+echo -e 'Aguardando inicialização dos containers'
+sleep 20
+
 chmod +x jq-files/jq-windows-amd64
 chmod +x jq-files/jq-linux-amd64
 
@@ -30,3 +36,5 @@ curl -X POST http://localhost:8081/subjects/$SUBJECT/versions \
     --data "{\"schema\": \"$(echo "$INFORMACOES_CLIENTE_CADASTRO_AVRO" | sed 's/"/\\"/g')\"}"
     
 echo -e 'Cadastro do topico informacoes-cliente-cadastrado no schema registry efetuado'
+
+sleep 2
