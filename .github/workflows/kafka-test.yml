@@ -35,11 +35,9 @@ jobs:
       with:
         time: '2s'
 
-    - name: Restore .NET project
-      run: dotnet restore 4oito6/4oito6.Kafka/4oito6.Kafka.csproj
-
-    - name: Build .NET project
-      run: dotnet build 4oito6/4oito6.Kafka/4oito6.Kafka.csproj --configuration Release
-
     - name: Execução dos testes
-      run: dotnet test 4oito6/4oito6.Kafka/4oito6.Kafka.csproj --no-build --verbosity normal
+      working-directory: ./4oito6/4oito6.Kafka
+      run: |
+        dotnet restore
+        dotnet build --configuration Release
+        dotnet test --configuration Release --no-build
