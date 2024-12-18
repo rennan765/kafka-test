@@ -13,43 +13,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    
+    - name: Checkout do código
+      uses: actions/checkout@v3
     
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-
-    - name: Restore dependencies
-      run: |
-         cd 4oito6
-         dotnet restore
     
-    - name: Build
-      run: |
-         cd 4oito6
-         dotnet build --no-restore
-
+    - name: Setup Docker Compose
+      run: sudo apt-get install -y docker-compose
+    
     - name: Start dependencies (docker-compose)
       run: docker-compose up -d
 
-    - name: Wait containers to start
+    - name: Aguardando containers iniciarem
       uses: jakejarvis/wait-action@master
       with:
         time: '10s'
 
     - name: Init Kafka Topic Configuration
-      run: |
-         chmod +x ./init.sh
-         ./init.sh
-      shell: bash
+      run: bash init.sh
 
     - name: Wait to run tests
       uses: jakejarvis/wait-action@master
       with:
         time: '2s'
-    
-    - name: Run Tests
-      run: |
-           cd 4oito6/4oito6.Kafka/
-           dotnet test 4oito6.Kafka.csproj --no-build --verbosity normal
+
+    - name: Restore .NET project
+      run: dotnet restore 4oito6/4oito6.Kafka/4oito6.Kafka.csproj
+
+    - name: Build .NET project
+      run: dotnet build 4oito6/4oito6.Kafka/4oito6.Kafka.csproj --configuration Release
+
+    - name: Execução dos testes
+      run: dotnet test 4oito6/4oito6.Kafka/4oito6.Kafka.csproj --no-build --verbosity normal
