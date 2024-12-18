@@ -1,0 +1,48 @@
+{
+    "namespace": "_4oito6.informacoes_cliente_cadastrado",
+    "type": "record",
+    "name": "InformacoesClienteCadastrado",
+    "fields": [{
+        "name": "data",
+        "type": {
+            "type": "record", 
+            "name": "Cliente",
+            "fields": [
+                { "name": "nome", "type": "string" },
+                { "name": "documento", "type": "string" },
+                { "name": "data_nascimento", "type": ["string", "null"] },
+
+                {
+                    "name": "endereco",
+                    "type": ["null", {
+                        "type": "record", 
+                        "name": "Endereco",
+                        "fields": [
+                            {"name": "logradouro", "type": "string"},
+                            {"name": "numero", "type": ["string", "null"]},
+                            {"name": "bairro", "type": "string"},
+                            {"name": "cidade", "type": "string"},
+                            {"name": "estado", "type": "string"},
+                            {"name": "cep", "type": "string"}
+                        ]
+                    }]
+                },
+                
+                {
+                    "name": "telefone",
+                    "type": ["null", {
+                        "type": "record", 
+                        "name": "Telefone",
+                        "fields": [
+                            {"name": "ddd", "type": "string"},
+                            {"name": "numero", "type": "string"}
+                        ]
+                    }]
+                },
+
+                { "name": "email", "type": ["string", "null"] },
+                { "name": "is_ativo", "type": "boolean" }
+            ]
+        }
+    }]
+}
