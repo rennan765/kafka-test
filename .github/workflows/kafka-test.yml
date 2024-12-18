@@ -8,12 +8,10 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-
+  kafka-test:
     runs-on: ubuntu-latest
 
     steps:
-    
     - name: Checkout do código
       uses: actions/checkout@v3
     
@@ -25,16 +23,12 @@ jobs:
     - name: Setup Docker Compose
       run: sudo apt-get install -y docker-compose
     
-    - name: Start dependencies (docker-compose)
-      run: docker-compose up -d
-
-    - name: Aguardando containers iniciarem
-      uses: jakejarvis/wait-action@master
-      with:
-        time: '10s'
-
-    - name: Init Kafka Topic Configuration
-      run: bash init.sh
+    - name: Inicializando ambiente
+      run: |
+        docker-compose up -d
+        echo "Aguardando containers inicializarem..."
+        sleep 20
+        bash init.sh
 
     - name: Wait to run tests
       uses: jakejarvis/wait-action@master
