@@ -8,18 +8,13 @@ on:
     branches: [ "master" ]
 
 jobs:
-  kafka-test:
+  checkout:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout do código
       uses: actions/checkout@v3
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    
+
     - name: Setup Docker Compose
       run: sudo apt-get install -y docker-compose
     
@@ -34,10 +29,33 @@ jobs:
       uses: jakejarvis/wait-action@master
       with:
         time: '2s'
+  dotnet-test:
+    runs-on: ubuntu-latest
 
+    steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    
     - name: Execução dos testes
       working-directory: ./4oito6/4oito6.Kafka
       run: |
         dotnet restore
         dotnet build --configuration Release
         dotnet test --configuration Release --no-build
+  python-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+    
+    - name: Execução dos testes
+      working-directory: ./pykafka
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        python -m unittest test_kafka.py
